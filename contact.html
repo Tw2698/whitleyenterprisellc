@@ -88,42 +88,123 @@
         </div>
 
         <div class="callout">
-          <div class="eyebrow">Email Contact</div>
+          <div class="eyebrow">Contact Form</div>
 
           <h2>Send Your Inquiry</h2>
 
           <p>
-            Contact Whitley Enterprise LLC directly using the email address or
-            button below. Please include enough information for us to understand
-            how we may best assist you.
+            Complete the form below and your message will be delivered directly
+            to Whitley Enterprise LLC.
           </p>
 
-          <div class="form-note">
-            <strong>Contact Email:</strong><br>
+          <form
+            action="https://formsubmit.co/whitleyenterprise@gmail.com"
+            method="POST"
+          >
+            <input
+              type="hidden"
+              name="_subject"
+              value="New Website Inquiry - Whitley Enterprise LLC"
+            >
 
+            <input
+              type="hidden"
+              name="_captcha"
+              value="false"
+            >
+
+            <input
+              type="hidden"
+              name="_template"
+              value="table"
+            >
+
+            <input
+              type="hidden"
+              name="_next"
+              value="https://whitleyenterprisellc.com/contact.html"
+            >
+
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Inquiry Type</label>
+              <select
+                id="subject"
+                name="inquiry_type"
+                required
+              >
+                <option value="">Select one</option>
+                <option value="Book Orders and Distribution">
+                  Book Orders &amp; Distribution
+                </option>
+                <option value="Bulk Orders">Bulk Orders</option>
+                <option value="Training and Workshops">
+                  Training &amp; Workshops
+                </option>
+                <option value="AV Consulting">AV Consulting</option>
+                <option value="Speaking Engagements">
+                  Speaking Engagements
+                </option>
+                <option value="Media and General Inquiries">
+                  Media &amp; General Inquiries
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="7"
+                required
+              ></textarea>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary" type="submit">
+                Send Inquiry
+              </button>
+            </div>
+          </form>
+
+          <p class="muted" style="margin-top:18px;">
+            Direct email:
             <a
               class="gold"
-              href="mailto:whitleyenterprise@gmail.com?subject=Website%20Inquiry"
+              href="mailto:whitleyenterprise@gmail.com"
             >
               whitleyenterprise@gmail.com
             </a>
-
-            <br>
-
-            <span class="muted">
-              For questions about the handbook, training, consulting, speaking
-              engagements, or general business inquiries.
-            </span>
-          </div>
-
-          <div class="btn-row">
-            <a
-              class="btn btn-primary"
-              href="mailto:whitleyenterprise@gmail.com?subject=Website%20Inquiry"
-            >
-              Email Whitley Enterprise LLC
-            </a>
-          </div>
+          </p>
         </div>
 
       </div>
@@ -151,7 +232,7 @@
 
           <p>
             Yes. Bulk-order inquiries are welcome and may be coordinated
-            through the contact email address.
+            through the contact form.
           </p>
         </details>
 
