@@ -1,0 +1,129 @@
+.pf-main {
+  font-family: 'Inter', sans-serif;
+  background: #0d0d0d;
+  color: #f2ede1;
+}
+
+.pf-main h1, .pf-main h2, .pf-main h3 {
+  font-family: 'Playfair Display', serif;
+  color: #f2ede1;
+}
+
+.pf-hero {
+  padding: 100px 20px 60px;
+  text-align: center;
+}
+
+.pf-eyebrow {
+  color: #c9a227;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.pf-hero h1 {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.pf-lead {
+  font-size: 18px;
+  color: #c9c4b8;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.pf-section {
+  padding: 60px 20px;
+  border-top: 1px solid #262626;
+}
+
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pf-card {
+  background: #161616;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.pf-card h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: #c9a227;
+}
+
+.pf-card p {
+  color: #c9c4b8;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.pf-military, .pf-stats, .pf-education {
+  text-align: center;
+}
+
+.pf-branch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 800px;
+  margin: 30px auto 0;
+  text-align: left;
+}
+
+.pf-branch {
+  background: #161616;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 25px 30px;
+}
+
+.pf-branch h3 {
+  color: #c9a227;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.pf-branch ul {
+  list-style: none;
+  padding: 0;
+  color: #c9c4b8;
+  line-height: 1.9;
+}
+
+.pf-stat-grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.pf-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pf-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px;
+  color: #c9a227;
+  font-weight: 600;
+}
+
+.pf-stat-label {
+  color: #c9c4b8;
+  font-size: 14px;
+  max-width: 200px;
+  margin-top: 8px;
+}
