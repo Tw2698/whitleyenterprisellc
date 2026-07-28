@@ -419,14 +419,13 @@ async function checkLicense() {
     const body = new URLSearchParams();
     body.append('product_id', GUMROAD_PRODUCT_ID);
     body.append('license_key', key);
-    body.append('increment_uses_count', 'false');
     const res = await fetch('https://api.gumroad.com/v2/licenses/verify', { method: 'POST', body });
     const data = await res.json();
     if (data.success) {
       localStorage.setItem('avAcademyUnlocked', 'true');
       unlockApp();
     } else {
-      errorEl.textContent = "Gumroad said: " + (data.message || "key not recognized") + " (debug mode — remove before launch)";
+      errorEl.textContent = "Gumroad said: " + (data.message || "key not recognized") + " | sent product_id=[" + GUMROAD_PRODUCT_ID + "] key=[" + key + "] (debug mode)";
     }
   } catch (err) {
     errorEl.textContent = "Couldn't reach the verification server — check your connection and try again.";
