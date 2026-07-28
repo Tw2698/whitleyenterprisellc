@@ -228,6 +228,27 @@
   .lock-error { color: var(--red); font-size: 11.5px; margin-top: 10px; min-height: 14px; }
   .lock-hint { font-size: 10.5px; color: var(--gray); margin-top: 18px; margin-bottom: 0; line-height: 1.5; }
   .status-lock-icon { font-size: 10px; }
+  .diagram-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .diagram-tile {
+    background: var(--navy-light); border-radius: 12px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .diagram-tile img { width: 100%; height: 90px; object-fit: cover; display: block; }
+  .diagram-tile .diagram-fallback {
+    width: 100%; height: 90px; display: flex; align-items: center; justify-content: center;
+    background: rgba(199,154,63,0.08); color: var(--gold); font-size: 20px; font-weight: 700;
+    font-family: Georgia, serif;
+  }
+  .diagram-caption { padding: 8px 10px; color: var(--gray-light); font-size: 10.5px; line-height: 1.4; }
+  .eq-band-row { display: flex; justify-content: space-between; align-items: flex-end; height: 140px; gap: 6px; }
+  .eq-band { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+  .eq-band input[type=range] {
+    writing-mode: vertical-lr; direction: rtl;
+    width: 20px; height: 100px; accent-color: var(--gold); background: transparent;
+  }
+  .eq-band-label { color: var(--gray-light); font-size: 9px; margin-top: 6px; text-align: center; }
 </style>
 </head>
 <body>
@@ -282,10 +303,10 @@
       <div class="card-sub">Trained on all 93 chapters, in the author's own teaching voice</div>
     </div>
 
-    <div class="card" onclick="showScreen('music')">
-      <span class="badge">Bonus tracks</span>
-      <div class="card-title" style="margin-top:8px">Companion audio for the handbook</div>
-      <div class="card-sub">Hear the concept, not just read it</div>
+    <div class="card" onclick="showScreen('tools')">
+      <span class="badge">Tools</span>
+      <div class="card-title" style="margin-top:8px">Room analyzer, EQ & diagrams</div>
+      <div class="card-sub">Hands-on tools tied to what you're reading</div>
     </div>
   </div>
 
@@ -343,27 +364,32 @@
     <div id="quizbox"></div>
   </div>
 
-  <!-- MUSIC -->
-  <div class="screen" id="music">
+  <!-- TOOLS -->
+  <div class="screen" id="tools">
     <div class="app-header">
-      <div><div class="eyebrow">Music</div><h1>Whitley Sound</h1></div>
+      <div><div class="eyebrow">Handbook tools</div><h1>Tools</h1></div>
     </div>
-    <div class="now-playing">
-      <span class="badge">Featured</span>
-      <div class="card-title" style="margin-top:8px;font-size:15px">Mastering Demo — Before/After</div>
-      <div class="card-sub">Referenced in Chapter 59, Figure 59.1</div>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
-        <button class="play-btn" style="width:36px;height:36px" onclick="this.textContent=this.textContent==='▶'?'❚❚':'▶'">▶</button>
-        <div class="progress-track" style="flex:1;margin-top:0"><div class="progress-fill" style="width:0%"></div></div>
-        <span style="color:#c9cedb;font-size:10px">0:00</span>
+
+    <div class="section-label">Diagram gallery</div>
+    <div class="diagram-grid" id="diagramGrid"></div>
+
+    <div class="section-label" style="margin-top:24px">Room Analyzer (RTA)</div>
+    <div class="card">
+      <div class="card-sub" style="margin-bottom:10px">Live spectrum of your room, using your device's microphone. Works on laptop or phone.</div>
+      <canvas id="rtaCanvas" width="300" height="120" style="width:100%;background:#0a0e1a;border-radius:8px"></canvas>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn-gold" id="rtaStartBtn" onclick="toggleRTA()">Start Analyzer</button>
       </div>
+      <div class="lock-error" id="rtaError" style="text-align:left"></div>
     </div>
-    <div class="section-label">Tied to what you're reading</div>
-    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Gain Staging in Practice</div><div class="track-sub">Ch. 29 companion track</div></div><button class="play-btn">▶</button></div>
-    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Worship Dynamics — Live Take</div><div class="track-sub">Ch. 47 companion track</div></div><button class="play-btn">▶</button></div>
-    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Signal Path Demo Reel</div><div class="track-sub">Ch. 10 companion track</div></div><button class="play-btn">▶</button></div>
-    <div class="section-label">Latest release</div>
-    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Through Knowledge</div><div class="track-sub">Single · Whitley Enterprise LLC</div></div><button class="play-btn">▶</button></div>
+
+    <div class="section-label" style="margin-top:24px">Graphic EQ — try it live</div>
+    <div class="card">
+      <div class="card-sub" style="margin-bottom:10px">Drag the bands, then test with your mic to hear the change. <strong>Use headphones</strong> to avoid feedback.</div>
+      <div class="eq-band-row" id="eqBandRow"></div>
+      <button class="btn-gold" id="eqTestBtn" style="margin-top:14px" onclick="toggleEQTest()">Test with Mic</button>
+      <div class="lock-error" id="eqError" style="text-align:left"></div>
+    </div>
   </div>
 
   <div class="tabbar">
@@ -383,9 +409,9 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
       Practice
     </button>
-    <button class="tab" data-tab="music" onclick="showScreen('music')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      Music
+    <button class="tab" data-tab="tools" onclick="showScreen('tools')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      Tools
     </button>
   </div>
 </div>
@@ -513,6 +539,201 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// Diagram gallery - looks for images in diagrams/ folder; falls back to a
+// clean placeholder tile (figure number) if the image file isn't there yet.
+const diagrams = [
+  { file: "fig_04_hearing.png",          num: "4",  title: "Human Hearing & Psychoacoustics" },
+  { file: "fig_05_frequency.png",        num: "5",  title: "The Frequency Spectrum" },
+  { file: "fig_07_decibels.png",         num: "7",  title: "The Decibel Scale" },
+  { file: "fig_08_waveforms.png",        num: "8",  title: "Waveforms" },
+  { file: "fig_09_phase.png",            num: "9",  title: "Phase Relationships" },
+  { file: "fig_10_signalflow.png",       num: "10", title: "Signal Flow" },
+  { file: "fig_16_harmonics.png",        num: "16", title: "Harmonics" },
+  { file: "fig_18_resonance.png",        num: "18", title: "Resonance & Standing Waves" },
+  { file: "fig_21_mictypes.png",         num: "21", title: "Microphone Types" },
+  { file: "fig_25_polarpatterns.png",    num: "25", title: "Polar Patterns" },
+  { file: "fig_29_gainstructure.png",    num: "29", title: "Gain Structure & Headroom" },
+  { file: "fig_30_procorder.png",        num: "30", title: "Channel Processing Order" },
+  { file: "fig_31_routing.png",          num: "31", title: "Aux Sends, Matrices & VCAs" },
+  { file: "fig_32_scenes.png",           num: "32", title: "Scenes vs. Snapshots" },
+  { file: "fig_33_workflow.png",         num: "33", title: "Show Workflow Cycle" },
+  { file: "fig_34_eqfilters.png",        num: "34", title: "EQ Filter Shapes" },
+  { file: "fig_35_eqtypes.png",          num: "35", title: "Graphic, Parametric & Dynamic EQ" },
+  { file: "fig_36_surgicalmusical.png",  num: "36", title: "Surgical vs. Musical EQ" },
+  { file: "fig_37_freqproblems.png",     num: "37", title: "Frequency Problem Vocabulary" },
+  { file: "fig_38_compressor.png",       num: "38", title: "Compressor Behavior" },
+  { file: "fig_39_gate.png",             num: "39", title: "Noise Gate Behavior" },
+  { file: "fig_41_busglue.png",          num: "41", title: "Layered Dynamics & Bus Glue" },
+  { file: "fig_42_linearray.png",        num: "42", title: "Line Array vs. Point Source" },
+  { file: "fig_43_subwoofers.png",       num: "43", title: "Subwoofer Placement" },
+  { file: "fig_45_crossovers.png",       num: "45", title: "Active Crossover Signal Path" },
+  { file: "fig_46_alignment.png",        num: "46", title: "Time & Phase Alignment" },
+  { file: "fig_47_worship.png",          num: "47", title: "Worship Service Dynamic Range" },
+  { file: "fig_48_redundancy.png",       num: "48", title: "Redundancy Planning" },
+  { file: "fig_49_festival.png",         num: "49", title: "Festival Changeover / House System" },
+  { file: "fig_50_stadium.png",          num: "50", title: "Stadium Delay System" },
+  { file: "fig_51_broadcastmix.png",     num: "51", title: "Broadcast Mix vs. Live Mix" },
+  { file: "fig_52_hybrid.png",           num: "52", title: "Hybrid Worship Dual Signal Path" },
+  { file: "fig_53_vocalmic.png",         num: "53", title: "Studio Vocal Mic Setup" },
+  { file: "fig_54_drumrecording.png",    num: "54", title: "Drum Kit Mic Placement" },
+  { file: "fig_55_guitaramp.png",        num: "55", title: "Guitar Amp Mic Placement" },
+  { file: "fig_56_piano_leslie.png",     num: "56", title: "Piano, Hammond & Leslie Mic Placement" },
+  { file: "fig_57_ensemble.png",         num: "57", title: "Close vs. Ensemble Mic'ing" },
+  { file: "fig_58_podcast.png",          num: "58", title: "Podcast Signal Chain" },
+  { file: "fig_59_mastering.png",        num: "59", title: "The Mastering Chain" },
+  { file: "fig_60_immersive.png",        num: "60", title: "Immersive / Object-Based Audio" },
+  { file: "fig_61_networkedaudio.png",   num: "61", title: "Networked Audio Topology" },
+  { file: "fig_62_avbmilan.png",         num: "62", title: "AVB / Milan Protocol Landscape" },
+  { file: "fig_63_cabling.png",          num: "63", title: "Cable Type Comparison" },
+  { file: "fig_64_clocking.png",         num: "64", title: "Clock Synchronization" },
+  { file: "fig_65_facility.png",         num: "65", title: "Facility Design Priorities" },
+  { file: "fig_66_rack.png",             num: "66", title: "Rack Signal Flow Layout" },
+  { file: "fig_67_groundloop.png",       num: "67", title: "Ground Loop Diagnosis" },
+  { file: "fig_68_ups.png",              num: "68", title: "UPS Power Protection" },
+  { file: "fig_70_ethics.png",           num: "70", title: "Professional Ethics Pillars" },
+  { file: "fig_71_training.png",         num: "71", title: "Volunteer / Hire Training Progression" },
+  { file: "fig_72_pricing.png",          num: "72", title: "Project Pricing Components" },
+  { file: "fig_73_business.png",         num: "73", title: "AV Business Pillars" },
+  { file: "fig_74_career.png",           num: "74", title: "Sustainable Career Triad" },
+  { file: "fig_75_certpath.png",         num: "75", title: "Certification Pathway" },
+  { file: "fig_76_videointerfaces.png",  num: "76", title: "Broadcast Video Interfaces (SDI/HDMI/NDI)" },
+  { file: "fig_78_camerachain.png",      num: "78", title: "Camera Chain / CCU Shading" },
+  { file: "fig_79_switcher.png",         num: "79", title: "Video Switcher Architecture" },
+  { file: "fig_80_streaming.png",        num: "80", title: "Live Streaming Pipeline" },
+  { file: "fig_81_mixminus.png",         num: "81", title: "Mix-Minus / IFB" },
+  { file: "fig_82_podcastworkflow.png",  num: "82", title: "Podcast Workflow" },
+  { file: "fig_83_lighting.png",         num: "83", title: "Three-Point Lighting" },
+  { file: "fig_84_broadcastchain.png",   num: "84", title: "Complete Broadcast Signal Chain" },
+  { file: "fig_85_scales.png",           num: "85", title: "Broadcast System Scale Comparison" },
+  { file: "fig_86_rf.png",               num: "86", title: "RF Frequency Coordination" },
+  { file: "fig_87_stagepatch.png",       num: "87", title: "Stage Box / Snake Architecture" },
+  { file: "fig_88_monitors.png",         num: "88", title: "Wedge vs. IEM Monitors" },
+  { file: "fig_89_measurement.png",      num: "89", title: "Dual-FFT System Measurement" },
+  { file: "fig_90_troubleshooting.png",  num: "90", title: "Troubleshooting Flowchart" },
+  { file: "fig_91_digitalconsoles.png",  num: "91", title: "Digital Mixer Channel Strip" },
+  { file: "fig_92_fohmix.png",           num: "92", title: "FOH Mix Build Order" },
+];
+function renderDiagramGrid() {
+  const grid = document.getElementById('diagramGrid');
+  grid.innerHTML = diagrams.map(d => `
+    <div class="diagram-tile">
+      <img src="diagrams/${d.file}" alt="Figure ${d.num}" onerror="this.outerHTML='<div class=diagram-fallback>Fig ${d.num}</div>'">
+      <div class="diagram-caption">Fig ${d.num} — ${d.title}</div>
+    </div>
+  `).join('');
+}
+renderDiagramGrid();
+
+// Room Analyzer (RTA) - real-time spectrum from the visitor's own microphone
+let rtaCtx, rtaAnalyser, rtaStream, rtaRAF, rtaRunning = false;
+async function toggleRTA() {
+  const btn = document.getElementById('rtaStartBtn');
+  const errEl = document.getElementById('rtaError');
+  errEl.textContent = '';
+  if (rtaRunning) {
+    stopRTA();
+    btn.textContent = 'Start Analyzer';
+    rtaRunning = false;
+    return;
+  }
+  try {
+    rtaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    rtaCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = rtaCtx.createMediaStreamSource(rtaStream);
+    rtaAnalyser = rtaCtx.createAnalyser();
+    rtaAnalyser.fftSize = 1024;
+    source.connect(rtaAnalyser);
+    drawRTA();
+    btn.textContent = 'Stop Analyzer';
+    rtaRunning = true;
+  } catch (err) {
+    errEl.textContent = "Couldn't access the microphone — check your browser's mic permission for this site and try again.";
+  }
+}
+function drawRTA() {
+  const canvas = document.getElementById('rtaCanvas');
+  const ctx = canvas.getContext('2d');
+  const bufferLength = rtaAnalyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  function render() {
+    rtaRAF = requestAnimationFrame(render);
+    rtaAnalyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const usableBins = Math.floor(bufferLength * 0.5);
+    const barWidth = canvas.width / usableBins;
+    for (let i = 0; i < usableBins; i++) {
+      const barHeight = (dataArray[i] / 255) * canvas.height;
+      ctx.fillStyle = '#C79A3F';
+      ctx.fillRect(i * barWidth, canvas.height - barHeight, Math.max(barWidth - 1, 1), barHeight);
+    }
+  }
+  render();
+}
+function stopRTA() {
+  if (rtaRAF) cancelAnimationFrame(rtaRAF);
+  if (rtaStream) rtaStream.getTracks().forEach(t => t.stop());
+  if (rtaCtx) rtaCtx.close();
+  const canvas = document.getElementById('rtaCanvas');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Graphic EQ - visual bands you can drag; optional live mic test through real filters
+const eqBands = [60, 150, 400, 1000, 2500, 6000, 12000];
+function renderEQBands() {
+  const row = document.getElementById('eqBandRow');
+  row.innerHTML = eqBands.map((freq, i) => `
+    <div class="eq-band">
+      <input type="range" min="-12" max="12" value="0" step="1" id="eqSlider${i}" oninput="updateEQBand(${i}, this.value)">
+      <div class="eq-band-label">${freq >= 1000 ? (freq/1000)+'k' : freq}</div>
+    </div>
+  `).join('');
+}
+renderEQBands();
+
+let eqCtx, eqStream, eqFilters = [], eqTesting = false;
+function updateEQBand(i, val) {
+  if (eqFilters[i]) eqFilters[i].gain.value = parseFloat(val);
+}
+async function toggleEQTest() {
+  const btn = document.getElementById('eqTestBtn');
+  const errEl = document.getElementById('eqError');
+  errEl.textContent = '';
+  if (eqTesting) {
+    stopEQTest();
+    btn.textContent = 'Test with Mic';
+    eqTesting = false;
+    return;
+  }
+  try {
+    eqStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    eqCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = eqCtx.createMediaStreamSource(eqStream);
+    let prev = source;
+    eqFilters = eqBands.map((freq, i) => {
+      const f = eqCtx.createBiquadFilter();
+      f.type = 'peaking';
+      f.frequency.value = freq;
+      f.Q.value = 1.2;
+      const slider = document.getElementById('eqSlider' + i);
+      f.gain.value = slider ? parseFloat(slider.value) : 0;
+      prev.connect(f);
+      prev = f;
+      return f;
+    });
+    prev.connect(eqCtx.destination);
+    btn.textContent = 'Stop Test';
+    eqTesting = true;
+  } catch (err) {
+    errEl.textContent = "Couldn't access the microphone — check your browser's mic permission for this site and try again.";
+  }
+}
+function stopEQTest() {
+  if (eqStream) eqStream.getTracks().forEach(t => t.stop());
+  if (eqCtx) eqCtx.close();
+  eqFilters = [];
+}
+
+// AI Tutor
 const tutorFAQ = [
   { keys: ["gain stag", "headroom"], a: "Gain staging is about setting levels at every point in the signal chain — mic pre, channel fader, bus, master — so each stage runs hot enough for a clean signal but never clips. Chapter 29 walks through the full headroom concept with examples." },
   { keys: ["compress", "ratio", "limit"], a: "A compressor reduces gain once a signal crosses your threshold, and the ratio decides how much reduction is applied. A 4:1 ratio means 4 dB over threshold comes out as 1 dB over. Chapter 38 covers this with the full diagram." },
