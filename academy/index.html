@@ -425,7 +425,7 @@ async function checkLicense() {
       localStorage.setItem('avAcademyUnlocked', 'true');
       unlockApp();
     } else {
-      errorEl.textContent = "Gumroad said: " + (data.message || "key not recognized") + " | sent product_id=[" + GUMROAD_PRODUCT_ID + "] key=[" + key + "] (debug mode)";
+      errorEl.textContent = "That key didn't check out — double check it and try again.";
     }
   } catch (err) {
     errorEl.textContent = "Couldn't reach the verification server — check your connection and try again.";
