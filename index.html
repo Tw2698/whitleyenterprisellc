@@ -1,90 +1,473 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Whitley Audio Visual Engineering Handbook | Official Website</title>
-<meta name="description" content="Official website of The Whitley Audio Visual Engineering Handbook by Dr. Timothy A. Whitley.">
-<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/styles.css">
-<link rel="stylesheet" href="assets/css/portfolio.css">  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Whitley AV Academy</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AV Academy">
+<meta name="theme-color" content="#12213A">
+<style>
+  :root {
+    --navy: #12213A;
+    --navy-light: #1c3155;
+    --navy-lighter: #24406b;
+    --gold: #C79A3F;
+    --gold-light: #e0c073;
+    --gray: #8a92a3;
+    --gray-light: #c9cedb;
+    --cream: #f5f2ea;
+    --red: #a53d3d;
+    --blue: #3e5a86;
+    --green: #2f7a4f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0a0e1a;
+    display: flex;
+    justify-content: center;
+    padding: 24px 12px;
+    min-height: 100vh;
+  }
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    background: var(--navy);
+    border-radius: 40px;
+    border: 6px solid #000;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    height: 844px;
+    position: relative;
+  }
+  .statusbar {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+    color: white;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px 90px;
+    display: none;
+  }
+  .screen.active { display: block; }
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .app-header h1 {
+    font-family: Georgia, serif;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .app-header .eyebrow {
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy); font-weight: 700; font-size: 13px;
+  }
+  .card {
+    background: var(--navy-light);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card-title { color: white; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .card-sub { color: var(--gray-light); font-size: 12px; line-height: 1.5; }
+  .progress-track {
+    height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px;
+    margin-top: 10px; overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; }
+  .stat-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .stat-card {
+    flex: 1; background: var(--navy-light); border-radius: 14px; padding: 12px;
+    text-align: center; border: 1px solid rgba(255,255,255,0.06);
+  }
+  .stat-num { color: var(--gold); font-size: 20px; font-weight: 700; font-family: Georgia, serif; }
+  .stat-label { color: var(--gray-light); font-size: 10px; margin-top: 2px; }
+  .section-label {
+    color: var(--gray-light); font-size: 11px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; margin: 18px 0 10px;
+  }
+  .part-header {
+    color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    margin: 16px 0 8px; text-transform: uppercase;
+  }
+  .chapter-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+  }
+  .chapter-num {
+    width: 30px; height: 30px; border-radius: 8px; background: rgba(199,154,63,0.15);
+    color: var(--gold); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .chapter-num.done { background: var(--gold); color: var(--navy); }
+  .chapter-title { color: white; font-size: 13px; flex: 1; }
+  .chapter-check { color: var(--gold); font-size: 14px; }
+  .tabbar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 78px; background: rgba(10,14,26,0.95);
+    display: flex; border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 18px;
+  }
+  .tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 4px; cursor: pointer; color: var(--gray);
+    font-size: 10px; font-weight: 600; background: none; border: none;
+  }
+  .tab.active { color: var(--gold); }
+  .tab svg { width: 20px; height: 20px; }
+  .btn-gold {
+    background: var(--gold); color: var(--navy); border: none;
+    padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 12px;
+    cursor: pointer; width: 100%;
+  }
+  .diagram-box {
+    background: white; border-radius: 14px; padding: 16px; margin: 10px 0;
+  }
+  .chat-msg { margin-bottom: 12px; display: flex; }
+  .chat-msg.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 80%; padding: 10px 13px; border-radius: 14px; font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .bubble.ai { background: var(--navy-light); color: white; border-bottom-left-radius: 4px; }
+  .bubble.user { background: var(--gold); color: var(--navy); border-bottom-right-radius: 4px; font-weight: 500; }
+  .chat-input-row {
+    position: absolute; bottom: 78px; left: 0; right: 0;
+    padding: 10px 20px; background: var(--navy);
+    display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .chat-input-row input {
+    flex: 1; background: var(--navy-light); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 9px 14px; color: white; font-size: 12.5px; outline: none;
+  }
+  .chat-input-row input::placeholder { color: var(--gray); }
+  .send-btn {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--gold);
+    border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .quiz-q { color: white; font-size: 14px; font-weight: 600; margin-bottom: 14px; line-height: 1.5; }
+  .quiz-opt {
+    background: var(--navy-light); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; color: white;
+    font-size: 12.5px; cursor: pointer;
+  }
+  .quiz-opt.correct { background: rgba(47,122,79,0.3); border-color: var(--green); }
+  .quiz-opt.wrong { background: rgba(165,61,61,0.3); border-color: var(--red); }
+  .track-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .track-art {
+    width: 42px; height: 42px; border-radius: 8px; background: linear-gradient(135deg, var(--gold), var(--navy-lighter));
+    flex-shrink: 0;
+  }
+  .track-title { color: white; font-size: 12.5px; font-weight: 600; }
+  .track-sub { color: var(--gray-light); font-size: 11px; }
+  .play-btn {
+    width: 30px; height: 30px; border-radius: 50%; background: rgba(199,154,63,0.15);
+    display: flex; align-items: center; justify-content: center; color: var(--gold);
+    border: none; cursor: pointer; flex-shrink: 0;
+  }
+  .now-playing {
+    background: linear-gradient(135deg, var(--navy-lighter), var(--navy));
+    border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(199,154,63,0.2);
+  }
+  .badge {
+    display: inline-block; background: rgba(199,154,63,0.15); color: var(--gold);
+    font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  ::-webkit-scrollbar { display: none; }
+</style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="container nav-wrap">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">W</span>
-      <span class="brand-copy">WHITLEY ENTERPRISE LLC<small>Publishing • Training • Engineering Excellence</small></span>
-    </a>
-    <button class="menu-btn" aria-label="Open navigation">☰</button>
-    <nav class="nav-links"><a class="active" href="index.html">Home</a>
-<a class="" href="handbook.html">Handbook</a>
-<a class="" href="author.html">Author</a>
-<a class="" href="preview.html">Look Inside</a>
-<a class="" href="training.html">Training</a>
-<a href="https://tw2698.github.io/timothy-whitley-music/" target="_blank">Music</a>
-<a href="portfolio.html">Professional Experience</a><a class="" href="contact.html">Contact</a></nav>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span>Whitley AV Academy</span>
+    <span>●●●</span>
   </div>
-</header>
 
-<main>
-<section class="hero">
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <div class="eyebrow">The Official Handbook Website</div>
-      <h1>Engineering Excellence <span>Through Knowledge.</span></h1>
-      <p class="lead">The official home of <strong>The Whitley Audio Visual Engineering Handbook</strong>—a comprehensive professional reference for audio, video, broadcast, networking, systems integration, technical ministry, education, and live production.</p>
-<div class="btn-row"><a class="btn btn-secondary" href="handbook.html">Explore the Handbook</a><a class="btn btn-secondary" href="preview.html">Look Inside</a><a class="btn btn-primary" href="https://whitleyenterprisellc.gumroad.com/l/handbook" target="_blank">Buy Now – $29.99</a></div>    </div>
-    <div class="book-stage"><img src="assets/images/book-front.jpg" alt="Front cover of The Whitley Audio Visual Engineering Handbook"></div>
-  </div>
-</section>
-<section class="trust-strip"><div class="container trust-grid"><div><strong>Volume I</strong><span class="muted">Professional Foundations</span></div><div><strong>Real-World</strong><span class="muted">Engineering Experience</span></div><div><strong>Church to Studio</strong><span class="muted">Practical Applications</span></div><div><strong>Future-Ready</strong><span class="muted">Systems & Integration</span></div></div></section>
-<section class="section"><div class="container">
-  <div class="section-head"><div class="eyebrow">Purpose</div><h2>Why This Handbook Matters</h2><p class="lead">Built from decades of real-world work in live sound, broadcast, recording, electrical installation, networking, systems integration, education, and technical ministry, this handbook turns complex engineering principles into practical knowledge readers can apply.</p></div>
-  <div class="grid-3">
-    <article class="card"><div class="icon">🎚️</div><h3>Operate With Confidence</h3><p>Strengthen signal flow, gain structure, mixing, routing, troubleshooting, and system operation.</p></article>
-    <article class="card"><div class="icon">📡</div><h3>Understand the System</h3><p>See how audio, video, networking, power, acoustics, and infrastructure work together.</p></article>
-    <article class="card"><div class="icon">🎓</div><h3>Teach the Next Generation</h3><p>Use a structured professional reference for classrooms, churches, teams, workshops, and self-study.</p></article>
-  </div>
-</div></section>
-<section class="section section-soft"><div class="container">
-  <div class="section-head"><div class="eyebrow">Audience</div><h2>Who This Handbook Is For</h2></div>
-  <div class="grid-3">
-    <div class="card"><h3>Live Sound Engineers</h3><p>Mixing, routing, dynamics, loudspeaker systems, and event production.</p></div>
-    <div class="card"><h3>Church Production Teams</h3><p>Technical ministry leadership, worship production, broadcast, and volunteer development.</p></div>
-    <div class="card"><h3>Studio & Broadcast Professionals</h3><p>Recording workflow, monitoring, signal quality, and media production.</p></div>
-    <div class="card"><h3>Students & Educators</h3><p>A structured reference for training programs, schools, and independent study.</p></div>
-    <div class="card"><h3>AV Integrators</h3><p>System design, networking, cabling, installation, testing, and commissioning.</p></div>
-    <div class="card"><h3>Technical Leaders</h3><p>Standards, team development, documentation, safety, and operational excellence.</p></div>
-  </div>
-</div></section>
-<section class="section"><div class="container author-split">
-  <img class="portrait" src="assets/images/dr-timothy-whitley.jpg" alt="Dr. Timothy A. Whitley">
-  <div><div class="eyebrow">Meet the Author</div><h2>Dr. Timothy A. Whitley</h2><p class="lead">Author, audio visual engineer, educator, business owner, minister, military veteran, and founder of Whitley Enterprise LLC.</p><p>Dr. Whitley brings a multidisciplinary career in technical systems, live production, training, electrical and installation work, ministry, and leadership to a handbook written for people who want to understand not only what to do, but why it works.</p><div class="btn-row"><a class="btn btn-primary" href="author.html">Read Full Biography</a></div></div>
-</div></section>
-<section class="section section-soft"><div class="container">
- <div class="section-head"><div class="eyebrow">Inside Volume I</div><h2>Professional Foundations</h2></div>
- <ul class="feature-list"><li>Sound and acoustics</li><li>Microphones and placement</li><li>Signal flow and gain structure</li><li>Equalization and dynamics</li><li>Mixing consoles and routing</li><li>Loudspeakers and monitoring</li><li>Digital audio and networking</li><li>Broadcast and streaming</li><li>Studio recording workflow</li><li>System design and installation</li><li>Troubleshooting methods</li><li>Technical leadership and safety</li></ul>
- <div class="btn-row"><a class="btn btn-secondary" href="handbook.html">View Handbook Details</a></div>
-</div></section>
-<section class="section"><div class="container callout"><div class="eyebrow">The Handbook Series</div><h2>Volume I Is Only the Beginning.</h2><p class="lead"><strong>Volume I — Professional Foundations</strong> establishes the core knowledge needed to build, operate, troubleshoot, and lead modern AV systems. Future volumes will expand into advanced systems, integration, and specialized applications.</p><div class="btn-row"><a class="btn btn-primary" href="contact.html">Bulk Orders & Inquiries</a></div></div></section>
-<section class="pf-section" style="text-align:center;"><div class="container"><p class="pf-eyebrow">Beyond the Handbook</p><h2 style="color:#f2ede1;font-family:'Playfair Display',serif;font-size:36px;margin-bottom:16px;">Explore the Full Portfolio</h2><p class="pf-lead" style="margin-bottom:30px;">Construction &amp; electrical engineering, sound engineering, project management, military service, education, and more — three decades of work across every discipline.</p><a href="portfolio.html" style="display:inline-block;background:#c9a227;color:#0d0d0d;padding:16px 40px;border-radius:6px;font-weight:600;text-decoration:none;">VIEW FULL PORTFOLIO</a></div></section>  
-</main>
-
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="brand"><span class="brand-mark">W</span><span class="brand-copy">WHITLEY ENTERPRISE LLC<small>Where Your Vision Comes to Life.</small></span></div>
-        <p class="muted" style="margin-top:18px">Official home of <em>The Whitley Audio Visual Engineering Handbook</em> and professional AV education, training, consulting, and publishing.</p>
-      </div>
-      <div><h3>Explore</h3><div class="footer-links"><a href="handbook.html">The Handbook</a><a href="author.html">About the Author</a><a href="preview.html">Look Inside</a><a href="training.html">Training</a></div></div>
-      <div><h3>Information</h3><div class="footer-links"><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a></div></div>
+  <!-- HOME -->
+  <div class="screen active" id="home">
+    <div class="app-header">
+      <div><div class="eyebrow">Welcome back</div><h1>Dr. Whitley</h1></div>
+      <div class="avatar">TW</div>
     </div>
-    <div class="copyright">© <span data-year></span> Whitley Enterprise LLC. All rights reserved.</div>
-  </div>
-</footer>
-<script src="assets/js/script.js"></script>
 
-</body></html>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num">14</div><div class="stat-label">day streak</div></div>
+      <div class="stat-card"><div class="stat-num">37</div><div class="stat-label">chapters done</div></div>
+      <div class="stat-card"><div class="stat-num">62%</div><div class="stat-label">certified</div></div>
+    </div>
+
+    <div class="card" onclick="showScreen('read')">
+      <span class="badge">Continue reading</span>
+      <div class="card-title" style="margin-top:8px">Chapter 38: Compression & Limiting</div>
+      <div class="card-sub">Part V — Dynamics Processing</div>
+      <div class="progress-track"><div class="progress-fill" style="width:64%"></div></div>
+    </div>
+
+    <div class="card" onclick="showScreen('read')">
+      <span class="badge">Diagram of the day</span>
+      <div class="card-title" style="margin-top:8px">Interactive EQ filter shapes</div>
+      <div class="card-sub">Drag the curve and hear how it changes — tap to explore</div>
+    </div>
+
+    <div class="card" onclick="showScreen('tutor')">
+      <span class="badge">AI tutor</span>
+      <div class="card-title" style="margin-top:8px">Ask anything about the handbook</div>
+      <div class="card-sub">Trained on all 93 chapters, in Dr. Whitley's own teaching voice</div>
+    </div>
+
+    <div class="card" onclick="showScreen('music')">
+      <span class="badge">Now playing</span>
+      <div class="card-title" style="margin-top:8px">Mastering demo — tied to Chapter 59</div>
+      <div class="card-sub">Hear the concept, not just read it</div>
+    </div>
+  </div>
+
+  <!-- READ -->
+  <div class="screen" id="read">
+    <div class="app-header">
+      <div><div class="eyebrow">Handbook</div><h1>Read</h1></div>
+    </div>
+
+    <div class="section-label">Interactive diagram — try it</div>
+    <div class="diagram-box">
+      <svg id="eqsvg" viewBox="0 0 300 130" style="width:100%;display:block">
+        <line x1="0" y1="65" x2="300" y2="65" stroke="#ddd" stroke-width="1"/>
+        <path id="eqcurve" d="M0,65 Q150,65 300,65" fill="none" stroke="#12213A" stroke-width="2.5"/>
+        <circle id="eqhandle" cx="150" cy="65" r="8" fill="#C79A3F" stroke="#12213A" stroke-width="1.5" style="cursor:grab"/>
+      </svg>
+      <div style="text-align:center;color:#8a92a3;font-size:10.5px;margin-top:4px">Drag the gold point — Figure 34.1, EQ filter shapes</div>
+    </div>
+
+    <div class="part-header">Part V — Equalization</div>
+    <div class="chapter-row"><div class="chapter-num done">34</div><div class="chapter-title">Understanding EQ & Filter Types</div><div class="chapter-check">✓</div></div>
+    <div class="chapter-row"><div class="chapter-num done">35</div><div class="chapter-title">Graphic, Parametric & Dynamic EQ</div><div class="chapter-check">✓</div></div>
+    <div class="chapter-row"><div class="chapter-num done">36</div><div class="chapter-title">Surgical vs. Musical EQ Technique</div><div class="chapter-check">✓</div></div>
+    <div class="chapter-row"><div class="chapter-num done">37</div><div class="chapter-title">Frequency Problem-Solving in the Mix</div><div class="chapter-check">✓</div></div>
+
+    <div class="part-header">Part VI — Dynamics Processing</div>
+    <div class="chapter-row" onclick="showScreen('practice')"><div class="chapter-num">38</div><div class="chapter-title">Compression & Limiting</div></div>
+    <div class="chapter-row"><div class="chapter-num" style="background:rgba(255,255,255,0.08);color:#8a92a3">39</div><div class="chapter-title" style="color:#8a92a3">Expansion & Noise Gates</div></div>
+    <div class="chapter-row"><div class="chapter-num" style="background:rgba(255,255,255,0.08);color:#8a92a3">40</div><div class="chapter-title" style="color:#8a92a3">Advanced Dynamics</div></div>
+  </div>
+
+  <!-- TUTOR -->
+  <div class="screen" id="tutor" style="padding-bottom:150px">
+    <div class="app-header">
+      <div><div class="eyebrow">AI tutor</div><h1>Ask the Handbook</h1></div>
+    </div>
+    <div id="chatlog">
+      <div class="chat-msg"><div class="bubble ai">Hi — I'm trained on the full Whitley AV Engineering Handbook. Ask me about any chapter, any concept, in plain language. What are you working on?</div></div>
+    </div>
+  </div>
+  <div class="chat-input-row" id="chatInputRow">
+    <input type="text" id="chatInput" placeholder="Ask about gain staging, EQ, mic placement..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="send-btn" onclick="sendChat()">→</button>
+  </div>
+
+  <!-- PRACTICE -->
+  <div class="screen" id="practice">
+    <div class="app-header">
+      <div><div class="eyebrow">Chapter 38 quiz</div><h1>Practice</h1></div>
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title">Certification progress</div>
+      <div class="progress-track"><div class="progress-fill" style="width:62%"></div></div>
+      <div class="card-sub" style="margin-top:6px">62% toward Whitley AV Academy Level 1</div>
+    </div>
+    <div id="quizbox"></div>
+  </div>
+
+  <!-- MUSIC -->
+  <div class="screen" id="music">
+    <div class="app-header">
+      <div><div class="eyebrow">Music</div><h1>Whitley Sound</h1></div>
+    </div>
+    <div class="now-playing">
+      <span class="badge">Now playing</span>
+      <div class="card-title" style="margin-top:8px;font-size:15px">Mastering Demo — Before/After</div>
+      <div class="card-sub">Referenced in Chapter 59, Figure 59.1</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+        <button class="play-btn" style="width:36px;height:36px" onclick="this.textContent=this.textContent==='▶'?'❚❚':'▶'">▶</button>
+        <div class="progress-track" style="flex:1;margin-top:0"><div class="progress-fill" style="width:38%"></div></div>
+        <span style="color:#c9cedb;font-size:10px">1:42</span>
+      </div>
+    </div>
+    <div class="section-label">Tied to what you're reading</div>
+    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Gain Staging in Practice</div><div class="track-sub">Ch. 29 companion track</div></div><button class="play-btn">▶</button></div>
+    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Worship Dynamics — Live Take</div><div class="track-sub">Ch. 47 companion track</div></div><button class="play-btn">▶</button></div>
+    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Signal Path Demo Reel</div><div class="track-sub">Ch. 10 companion track</div></div><button class="play-btn">▶</button></div>
+    <div class="section-label">Latest release</div>
+    <div class="track-row"><div class="track-art"></div><div style="flex:1"><div class="track-title">Through Knowledge</div><div class="track-sub">Single · Whitley Enterprise LLC</div></div><button class="play-btn">▶</button></div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab active" data-tab="home" onclick="showScreen('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="tab" data-tab="read" onclick="showScreen('read')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4V4zM20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6V4z"/></svg>
+      Read
+    </button>
+    <button class="tab" data-tab="tutor" onclick="showScreen('tutor')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
+      Tutor
+    </button>
+    <button class="tab" data-tab="practice" onclick="showScreen('practice')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Practice
+    </button>
+    <button class="tab" data-tab="music" onclick="showScreen('music')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Music
+    </button>
+  </div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-tab="' + id + '"]').classList.add('active');
+  document.getElementById('chatInputRow').style.display = (id === 'tutor') ? 'flex' : 'none';
+  if (id === 'practice' && !window.quizLoaded) loadQuiz();
+}
+document.getElementById('chatInputRow').style.display = 'none';
+
+// Interactive EQ diagram drag
+const svg = document.getElementById('eqsvg');
+const handle = document.getElementById('eqhandle');
+const curve = document.getElementById('eqcurve');
+let dragging = false;
+function updateCurve(cx, cy) {
+  cy = Math.max(20, Math.min(110, cy));
+  handle.setAttribute('cx', cx);
+  handle.setAttribute('cy', cy);
+  curve.setAttribute('d', `M0,65 Q${cx},${cy} 300,65`);
+}
+function getPos(evt) {
+  const rect = svg.getBoundingClientRect();
+  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+  const x = (clientX - rect.left) / rect.width * 300;
+  const y = (clientY - rect.top) / rect.height * 130;
+  return {x, y};
+}
+handle.addEventListener('mousedown', () => dragging = true);
+handle.addEventListener('touchstart', () => dragging = true);
+window.addEventListener('mousemove', e => { if (dragging) { const p = getPos(e); updateCurve(150, p.y); } });
+window.addEventListener('touchmove', e => { if (dragging) { const p = getPos(e); updateCurve(150, p.y); } });
+window.addEventListener('mouseup', () => dragging = false);
+window.addEventListener('touchend', () => dragging = false);
+
+// Quiz
+const quizQuestions = [
+  { q: "What does a compressor's ratio control determine?", opts: ["How much gain reduction is applied above threshold", "The attack time only", "The output sample rate", "The number of channels compressed"], correct: 0 },
+  { q: "A 4:1 ratio means for every 4 dB over threshold, output increases by:", opts: ["4 dB", "1 dB", "0 dB", "8 dB"], correct: 1 },
+  { q: "Fast attack times are best suited for:", opts: ["Preserving transient punch", "Catching transients and smoothing them quickly", "Only mastering", "Only vocals"], correct: 1 },
+];
+let quizIdx = 0, quizScore = 0;
+function loadQuiz() {
+  window.quizLoaded = true;
+  renderQuiz();
+}
+function renderQuiz() {
+  const box = document.getElementById('quizbox');
+  if (quizIdx >= quizQuestions.length) {
+    box.innerHTML = `<div class="card" style="text-align:center"><div class="card-title" style="font-size:16px">Quiz complete</div><div class="card-sub" style="margin:8px 0">Score: ${quizScore}/${quizQuestions.length}</div><button class="btn-gold" onclick="quizIdx=0;quizScore=0;renderQuiz()">Retry</button></div>`;
+    return;
+  }
+  const q = quizQuestions[quizIdx];
+  box.innerHTML = `<div class="quiz-q">${quizIdx+1}. ${q.q}</div>` +
+    q.opts.map((o,i) => `<div class="quiz-opt" onclick="answerQuiz(${i})">${o}</div>`).join('');
+}
+function answerQuiz(i) {
+  const q = quizQuestions[quizIdx];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach((el, idx) => {
+    if (idx === q.correct) el.classList.add('correct');
+    else if (idx === i) el.classList.add('wrong');
+    el.onclick = null;
+  });
+  if (i === q.correct) quizScore++;
+  setTimeout(() => { quizIdx++; renderQuiz(); }, 900);
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+  });
+}
+
+// AI Tutor - real Claude API call
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const log = document.getElementById('chatlog');
+  log.innerHTML += `<div class="chat-msg user"><div class="bubble user">${msg}</div></div>`;
+  input.value = '';
+  const typingId = 'typing-' + Date.now();
+  log.innerHTML += `<div class="chat-msg" id="${typingId}"><div class="bubble ai">…</div></div>`;
+  document.getElementById('tutor').scrollTop = document.getElementById('tutor').scrollHeight;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 400,
+        system: "You are the AI tutor inside the Whitley AV Academy app, built on The Whitley Audio Visual Engineering Handbook by Dr. Timothy A. Whitley. Answer questions about audio engineering, live sound, studio recording, and AV systems the way the handbook teaches: plain language first, then applied to real equipment, reasoning always included. Keep answers to 2-4 short sentences, warm and encouraging, like a great mentor. Never use markdown formatting.",
+        messages: [{ role: "user", content: msg }]
+      })
+    });
+    const data = await response.json();
+    const reply = data.content && data.content[0] ? data.content[0].text : "I couldn't process that — try asking again.";
+    document.getElementById(typingId).innerHTML = `<div class="bubble ai">${reply}</div>`;
+  } catch (err) {
+    document.getElementById(typingId).innerHTML = `<div class="bubble ai">Connection issue — try again in a moment.</div>`;
+  }
+  document.getElementById('tutor').scrollTop = document.getElementById('tutor').scrollHeight;
+}
+</script>
+
+</body>
+</html>
