@@ -426,7 +426,7 @@ async function checkLicense() {
       localStorage.setItem('avAcademyUnlocked', 'true');
       unlockApp();
     } else {
-      errorEl.textContent = "That key didn't check out — double check it and try again.";
+      errorEl.textContent = "Gumroad said: " + (data.message || "key not recognized") + " (debug mode — remove before launch)";
     }
   } catch (err) {
     errorEl.textContent = "Couldn't reach the verification server — check your connection and try again.";
@@ -514,22 +514,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// AI Tutor
-// NOTE: The original version of this file called https://api.anthropic.com/v1/messages
-// directly from the browser. That only works inside Claude.ai's own Artifact preview,
-// which quietly proxies the request and injects an API key for you. On a real, publicly
-// hosted page (like this one on whitleyenterprisellc.com) that same call fails every time:
-// there's no API key attached, and Anthropic's API blocks direct browser requests (CORS).
-// Every visitor would just see "Connection issue" no matter what they typed - which is
-// almost certainly the "stuck" behavior you saw.
-//
-// Embedding a real API key in this file isn't a safe fix either - anyone who views the
-// page source would be able to copy it and rack up charges on your account.
-//
-// Until you have a small server-side proxy (e.g. a Cloudflare Worker) holding the API key
-// on the backend, this tutor answers from a small built-in FAQ so it responds instantly
-// and never gets stuck. Swap swapInRealAI() back in once a proxy endpoint exists.
-
 const tutorFAQ = [
   { keys: ["gain stag", "headroom"], a: "Gain staging is about setting levels at every point in the signal chain — mic pre, channel fader, bus, master — so each stage runs hot enough for a clean signal but never clips. Chapter 29 walks through the full headroom concept with examples." },
   { keys: ["compress", "ratio", "limit"], a: "A compressor reduces gain once a signal crosses your threshold, and the ratio decides how much reduction is applied. A 4:1 ratio means 4 dB over threshold comes out as 1 dB over. Chapter 38 covers this with the full diagram." },
@@ -564,17 +548,6 @@ async function sendChat() {
     document.getElementById('tutor').scrollTop = document.getElementById('tutor').scrollHeight;
   }, 500);
 }
-
-// Reference implementation for when a real backend proxy exists - do not use as-is client-side.
-// async function swapInRealAI(msg) {
-//   const response = await fetch("https://your-proxy-worker.example.com/tutor", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ message: msg })
-//   });
-//   const data = await response.json();
-//   return data.reply;
-// }
 </script>
 
 </body>
