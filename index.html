@@ -1,770 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Whitley AV Academy</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AV Academy">
-<meta name="theme-color" content="#12213A">
-<style>
-  :root {
-    --navy: #12213A;
-    --navy-light: #1c3155;
-    --navy-lighter: #24406b;
-    --gold: #C79A3F;
-    --gold-light: #e0c073;
-    --gray: #8a92a3;
-    --gray-light: #c9cedb;
-    --cream: #f5f2ea;
-    --red: #a53d3d;
-    --blue: #3e5a86;
-    --green: #2f7a4f;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #0a0e1a;
-    display: flex;
-    justify-content: center;
-    padding: 24px 12px;
-    min-height: 100vh;
-  }
-  .phone {
-    width: 390px;
-    max-width: 100%;
-    background: var(--navy);
-    border-radius: 40px;
-    border: 6px solid #000;
-    overflow: hidden;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    height: 844px;
-    position: relative;
-  }
-  .statusbar {
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    font-size: 12px;
-    color: white;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-  .screen {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 20px 90px;
-    display: none;
-  }
-  .screen.active { display: block; }
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .app-header h1 {
-    font-family: Georgia, serif;
-    color: white;
-    font-size: 20px;
-    font-weight: 700;
-  }
-  .app-header .eyebrow {
-    color: var(--gold);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--navy); font-weight: 700; font-size: 13px;
-  }
-  .card {
-    background: var(--navy-light);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 14px;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-  .card-title { color: white; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-  .card-sub { color: var(--gray-light); font-size: 12px; line-height: 1.5; }
-  .progress-track {
-    height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px;
-    margin-top: 10px; overflow: hidden;
-  }
-  .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; }
-  .stat-row { display: flex; gap: 10px; margin-bottom: 14px; }
-  .stat-card {
-    flex: 1; background: var(--navy-light); border-radius: 14px; padding: 12px;
-    text-align: center; border: 1px solid rgba(255,255,255,0.06);
-  }
-  .stat-num { color: var(--gold); font-size: 20px; font-weight: 700; font-family: Georgia, serif; }
-  .stat-label { color: var(--gray-light); font-size: 10px; margin-top: 2px; }
-  .section-label {
-    color: var(--gray-light); font-size: 11px; font-weight: 600;
-    letter-spacing: 1px; text-transform: uppercase; margin: 18px 0 10px;
-  }
-  .part-header {
-    color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: 1px;
-    margin: 16px 0 8px; text-transform: uppercase;
-  }
-  .chapter-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
-    cursor: pointer;
-  }
-  .chapter-num {
-    width: 30px; height: 30px; border-radius: 8px; background: rgba(199,154,63,0.15);
-    color: var(--gold); font-size: 12px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .chapter-num.done { background: var(--gold); color: var(--navy); }
-  .chapter-title { color: white; font-size: 13px; flex: 1; }
-  .chapter-check { color: var(--gold); font-size: 14px; }
-  .tabbar {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 78px; background: rgba(10,14,26,0.95);
-    display: flex; border-top: 1px solid rgba(255,255,255,0.08);
-    padding-bottom: 18px;
-  }
-  .tab {
-    flex: 1; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 4px; cursor: pointer; color: var(--gray);
-    font-size: 10px; font-weight: 600; background: none; border: none;
-  }
-  .tab.active { color: var(--gold); }
-  .tab svg { width: 20px; height: 20px; }
-  .btn-gold {
-    background: var(--gold); color: var(--navy); border: none;
-    padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 12px;
-    cursor: pointer; width: 100%;
-  }
-  .diagram-box {
-    background: white; border-radius: 14px; padding: 16px; margin: 10px 0;
-  }
-  .chat-msg { margin-bottom: 12px; display: flex; }
-  .chat-msg.user { justify-content: flex-end; }
-  .bubble {
-    max-width: 80%; padding: 10px 13px; border-radius: 14px; font-size: 12.5px;
-    line-height: 1.5;
-  }
-  .bubble.ai { background: var(--navy-light); color: white; border-bottom-left-radius: 4px; }
-  .bubble.user { background: var(--gold); color: var(--navy); border-bottom-right-radius: 4px; font-weight: 500; }
-  .chat-input-row {
-    position: absolute; bottom: 78px; left: 0; right: 0;
-    padding: 10px 20px; background: var(--navy);
-    display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  .chat-input-row input {
-    flex: 1; background: var(--navy-light); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px; padding: 9px 14px; color: white; font-size: 12.5px; outline: none;
-  }
-  .chat-input-row input::placeholder { color: var(--gray); }
-  .send-btn {
-    width: 36px; height: 36px; border-radius: 50%; background: var(--gold);
-    border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;
-  }
-  .quiz-q { color: white; font-size: 14px; font-weight: 600; margin-bottom: 14px; line-height: 1.5; }
-  .quiz-opt {
-    background: var(--navy-light); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; color: white;
-    font-size: 12.5px; cursor: pointer;
-  }
-  .quiz-opt.correct { background: rgba(47,122,79,0.3); border-color: var(--green); }
-  .quiz-opt.wrong { background: rgba(165,61,61,0.3); border-color: var(--red); }
-  .track-row {
-    display: flex; align-items: center; gap: 12px; padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .track-art {
-    width: 42px; height: 42px; border-radius: 8px; background: linear-gradient(135deg, var(--gold), var(--navy-lighter));
-    flex-shrink: 0;
-  }
-  .track-title { color: white; font-size: 12.5px; font-weight: 600; }
-  .track-sub { color: var(--gray-light); font-size: 11px; }
-  .play-btn {
-    width: 30px; height: 30px; border-radius: 50%; background: rgba(199,154,63,0.15);
-    display: flex; align-items: center; justify-content: center; color: var(--gold);
-    border: none; cursor: pointer; flex-shrink: 0;
-  }
-  .now-playing {
-    background: linear-gradient(135deg, var(--navy-lighter), var(--navy));
-    border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(199,154,63,0.2);
-  }
-  .badge {
-    display: inline-block; background: rgba(199,154,63,0.15); color: var(--gold);
-    font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
-    letter-spacing: 0.5px; text-transform: uppercase;
-  }
-  ::-webkit-scrollbar { display: none; }
-  .lock-screen {
-    position: absolute; top: 30px; left: 0; right: 0; bottom: 0;
-    background: var(--navy); z-index: 500;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 36px 28px; text-align: center;
-  }
-  .lock-icon-big { font-size: 40px; margin-bottom: 14px; }
-  .lock-screen h1 {
-    font-family: Georgia, serif; color: white; font-size: 19px; font-weight: 700; margin-bottom: 8px;
-  }
-  .lock-screen p { color: var(--gray-light); font-size: 12.5px; line-height: 1.6; margin-bottom: 20px; }
-  .lock-screen input {
-    width: 100%; background: var(--navy-light); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px; padding: 12px 14px; color: white; font-size: 13px; outline: none;
-    margin-bottom: 12px; text-align: center; letter-spacing: 0.5px;
-  }
-  .lock-screen input::placeholder { color: var(--gray); }
-  .lock-error { color: var(--red); font-size: 11.5px; margin-top: 10px; min-height: 14px; }
-  .lock-hint { font-size: 10.5px; color: var(--gray); margin-top: 18px; margin-bottom: 0; line-height: 1.5; }
-  .status-lock-icon { font-size: 10px; }
-  .diagram-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  }
-  .diagram-tile {
-    background: var(--navy-light); border-radius: 12px; overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-  .diagram-tile img { width: 100%; height: 90px; object-fit: cover; display: block; }
-  .diagram-tile .diagram-fallback {
-    width: 100%; height: 90px; display: flex; align-items: center; justify-content: center;
-    background: rgba(199,154,63,0.08); color: var(--gold); font-size: 20px; font-weight: 700;
-    font-family: Georgia, serif;
-  }
-  .diagram-caption { padding: 8px 10px; color: var(--gray-light); font-size: 10.5px; line-height: 1.4; }
-  .eq-band-row { display: flex; justify-content: space-between; align-items: flex-end; height: 140px; gap: 6px; }
-  .eq-band { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
-  .eq-band input[type=range] {
-    writing-mode: vertical-lr; direction: rtl;
-    width: 20px; height: 100px; accent-color: var(--gold); background: transparent;
-  }
-  .eq-band-label { color: var(--gray-light); font-size: 9px; margin-top: 6px; text-align: center; }
-</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Whitley Audio Visual Engineering Handbook | Official Website</title>
+<meta name="description" content="Official website of The Whitley Audio Visual Engineering Handbook by Dr. Timothy A. Whitley.">
+<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/portfolio.css">  
 </head>
 <body>
 
-<div class="phone">
-  <div class="statusbar">
-    <span>9:41</span>
-    <span>Whitley AV Academy</span>
-    <span class="status-lock-icon" id="statusLockIcon">🔒</span>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">W</span>
+      <span class="brand-copy">WHITLEY ENTERPRISE LLC<small>Publishing • Training • Engineering Excellence</small></span>
+    </a>
+    <button class="menu-btn" aria-label="Open navigation">☰</button>
+    <nav class="nav-links"><a class="active" href="index.html">Home</a>
+<a class="" href="handbook.html">Handbook</a>
+<a class="" href="author.html">Author</a>
+<a class="" href="preview.html">Look Inside</a>
+<a class="" href="training.html">Training</a>
+<a href="https://tw2698.github.io/timothy-whitley-music/" target="_blank">Music</a>
+<a href="portfolio.html">Professional Experience</a><a class="" href="contact.html">Contact</a></nav>
   </div>
+</header>
 
-  <!-- LICENSE GATE -->
-  <div class="lock-screen" id="lockScreen">
-    <div class="lock-icon-big">🔒</div>
-    <h1>Bonus for Handbook Owners</h1>
-    <p>This companion app is included free with your purchase of The Whitley Audio Visual Engineering Handbook. Enter the license key from your purchase receipt to unlock it.</p>
-    <input type="text" id="licenseInput" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" onkeydown="if(event.key==='Enter')checkLicense()">
-    <button class="btn-gold" id="unlockBtn" onclick="checkLicense()">Unlock</button>
-    <div class="lock-error" id="lockError"></div>
-    <p class="lock-hint">Your license key was emailed with your handbook receipt. Haven't purchased yet? Get the handbook on Gumroad to receive your key.</p>
+<main>
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">The Official Handbook Website</div>
+      <h1>Engineering Excellence <span>Through Knowledge.</span></h1>
+      <p class="lead">The official home of <strong>The Whitley Audio Visual Engineering Handbook</strong>—a comprehensive professional reference for audio, video, broadcast, networking, systems integration, technical ministry, education, and live production.</p>
+<div class="btn-row"><a class="btn btn-secondary" href="handbook.html">Explore the Handbook</a><a class="btn btn-secondary" href="preview.html">Look Inside</a><a class="btn btn-primary" href="https://whitleyenterprisellc.gumroad.com/l/handbook" target="_blank">Buy Now – $29.99</a></div>    </div>
+    <div class="book-stage"><img src="assets/images/book-front.jpg" alt="Front cover of The Whitley Audio Visual Engineering Handbook"></div>
   </div>
-
-  <!-- HOME -->
-  <div class="screen active" id="home">
-    <div class="app-header">
-      <div><div class="eyebrow">Welcome to</div><h1>AV Academy</h1></div>
-      <div class="avatar">AV</div>
-    </div>
-
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-num">93</div><div class="stat-label">chapters</div></div>
-      <div class="stat-card"><div class="stat-num">70</div><div class="stat-label">diagrams</div></div>
-      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">parts</div></div>
-    </div>
-
-    <div class="card" onclick="showScreen('read')">
-      <span class="badge">Start reading</span>
-      <div class="card-title" style="margin-top:8px">Chapter 1: Foundations of Audio Engineering</div>
-      <div class="card-sub">Part I — Getting Started</div>
-      <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
-    </div>
-
-    <div class="card" onclick="showScreen('read')">
-      <span class="badge">Diagram of the day</span>
-      <div class="card-title" style="margin-top:8px">Interactive EQ filter shapes</div>
-      <div class="card-sub">Drag the curve and hear how it changes — tap to explore</div>
-    </div>
-
-    <div class="card" onclick="showScreen('tutor')">
-      <span class="badge">AI tutor</span>
-      <div class="card-title" style="margin-top:8px">Ask anything about the handbook</div>
-      <div class="card-sub">Trained on all 93 chapters, in the author's own teaching voice</div>
-    </div>
-
-    <div class="card" onclick="showScreen('tools')">
-      <span class="badge">Tools</span>
-      <div class="card-title" style="margin-top:8px">Room analyzer, EQ & diagrams</div>
-      <div class="card-sub">Hands-on tools tied to what you're reading</div>
-    </div>
+</section>
+<section class="trust-strip"><div class="container trust-grid"><div><strong>Volume I</strong><span class="muted">Professional Foundations</span></div><div><strong>Real-World</strong><span class="muted">Engineering Experience</span></div><div><strong>Church to Studio</strong><span class="muted">Practical Applications</span></div><div><strong>Future-Ready</strong><span class="muted">Systems & Integration</span></div></div></section>
+<section class="section"><div class="container">
+  <div class="section-head"><div class="eyebrow">Purpose</div><h2>Why This Handbook Matters</h2><p class="lead">Built from decades of real-world work in live sound, broadcast, recording, electrical installation, networking, systems integration, education, and technical ministry, this handbook turns complex engineering principles into practical knowledge readers can apply.</p></div>
+  <div class="grid-3">
+    <article class="card"><div class="icon">🎚️</div><h3>Operate With Confidence</h3><p>Strengthen signal flow, gain structure, mixing, routing, troubleshooting, and system operation.</p></article>
+    <article class="card"><div class="icon">📡</div><h3>Understand the System</h3><p>See how audio, video, networking, power, acoustics, and infrastructure work together.</p></article>
+    <article class="card"><div class="icon">🎓</div><h3>Teach the Next Generation</h3><p>Use a structured professional reference for classrooms, churches, teams, workshops, and self-study.</p></article>
   </div>
-
-  <!-- READ -->
-  <div class="screen" id="read">
-    <div class="app-header">
-      <div><div class="eyebrow">Handbook</div><h1>Read</h1></div>
-    </div>
-
-    <div class="section-label">Interactive diagram — try it</div>
-    <div class="diagram-box">
-      <svg id="eqsvg" viewBox="0 0 300 130" style="width:100%;display:block">
-        <line x1="0" y1="65" x2="300" y2="65" stroke="#ddd" stroke-width="1"/>
-        <path id="eqcurve" d="M0,65 Q150,65 300,65" fill="none" stroke="#12213A" stroke-width="2.5"/>
-        <circle id="eqhandle" cx="150" cy="65" r="8" fill="#C79A3F" stroke="#12213A" stroke-width="1.5" style="cursor:grab"/>
-      </svg>
-      <div style="text-align:center;color:#8a92a3;font-size:10.5px;margin-top:4px">Drag the gold point — Figure 34.1, EQ filter shapes</div>
-    </div>
-
-    <div class="section-label" style="margin-top:20px">Full Handbook</div>
-    <div class="card">
-      <div class="card-sub" style="margin-bottom:10px">Your complete 256-page handbook.</div>
-      <a href="handbook.pdf" target="_blank" class="btn-gold" style="display:block;text-align:center;text-decoration:none">Open Full Book</a>
-    </div>
+</div></section>
+<section class="section section-soft"><div class="container">
+ <div class="section-head"><div class="eyebrow">Audience</div><h2>Who This Handbook Is For</h2></div>
+  <div class="grid-3">
+    <div class="card"><h3>Live Sound Engineers</h3><p>Mixing, routing, dynamics, loudspeaker systems, and event production.</p></div>
+    <div class="card"><h3>Church Production Teams</h3><p>Technical ministry leadership, worship production, broadcast, and volunteer development.</p></div>
+    <div class="card"><h3>Studio & Broadcast Professionals</h3><p>Recording workflow, monitoring, signal quality, and media production.</p></div>
+    <div class="card"><h3>Students & Educators</h3><p>A structured reference for training programs, schools, and independent study.</p></div>
+    <div class="card"><h3>AV Integrators</h3><p>System design, networking, cabling, installation, testing, and commissioning.</p></div>
+    <div class="card"><h3>Technical Leaders</h3><p>Standards, team development, documentation, safety, and operational excellence.</p></div>
   </div>
+</div></section>
+<section class="section"><div class="container author-split">
+  <img class="portrait" src="assets/images/dr-timothy-whitley.jpg" alt="Dr. Timothy A. Whitley">
+  <div><div class="eyebrow">Meet the Author</div><h2>Dr. Timothy A. Whitley</h2><p class="lead">Author, audio visual engineer, educator, business owner, minister, military veteran, and founder of Whitley Enterprise LLC.</p><p>Dr. Whitley brings a multidisciplinary career in technical systems, live production, training, electrical and installation work, ministry, and leadership to a handbook written for people who want to understand not only what to do, but why it works.</p><div class="btn-row"><a class="btn btn-primary" href="author.html">Read Full Biography</a></div></div>
+</div></section>
+<section class="section section-soft"><div class="container">
+ <div class="section-head"><div class="eyebrow">Inside Volume I</div><h2>Professional Foundations</h2></div>
+ <ul class="feature-list"><li>Sound and acoustics</li><li>Microphones and placement</li><li>Signal flow and gain structure</li><li>Equalization and dynamics</li><li>Mixing consoles and routing</li><li>Loudspeakers and monitoring</li><li>Digital audio and networking</li><li>Broadcast and streaming</li><li>Studio recording workflow</li><li>System design and installation</li><li>Troubleshooting methods</li><li>Technical leadership and safety</li></ul>
+ <div class="btn-row"><a class="btn btn-secondary" href="handbook.html">View Handbook Details</a></div>
+</div></section>
+<section class="section"><div class="container callout"><div class="eyebrow">The Handbook Series</div><h2>Volume I Is Only the Beginning.</h2><p class="lead"><strong>Volume I — Professional Foundations</strong> establishes the core knowledge needed to build, operate, troubleshoot, and lead modern AV systems. Future volumes will expand into advanced systems, integration, and specialized applications.</p><div class="btn-row"><a class="btn btn-primary" href="contact.html">Bulk Orders & Inquiries</a></div></div></section>
+<section class="pf-section" style="text-align:center;"><div class="container"><p class="pf-eyebrow">Beyond the Handbook</p><h2 style="color:#f2ede1;font-family:'Playfair Display',serif;font-size:36px;margin-bottom:16px;">Explore the Full Portfolio</h2><p class="pf-lead" style="margin-bottom:30px;">Construction &amp; electrical engineering, sound engineering, project management, military service, education, and more — three decades of work across every discipline.</p><a href="portfolio.html" style="display:inline-block;background:#c9a227;color:#0d0d0d;padding:16px 40px;border-radius:6px;font-weight:600;text-decoration:none;">VIEW FULL PORTFOLIO</a></div></section>  
+</main>
 
-  <!-- TUTOR -->
-  <div class="screen" id="tutor" style="padding-bottom:150px">
-    <div class="app-header">
-      <div><div class="eyebrow">AI tutor</div><h1>Ask the Handbook</h1></div>
-    </div>
-    <div id="chatlog">
-      <div class="chat-msg"><div class="bubble ai">Hi — I can help with questions about the Whitley AV Engineering Handbook. Ask me about gain staging, EQ, compression, mic placement, or anything else in the book.</div></div>
-    </div>
-  </div>
-  <div class="chat-input-row" id="chatInputRow">
-    <input type="text" id="chatInput" placeholder="Ask about gain staging, EQ, mic placement..." onkeydown="if(event.key==='Enter')sendChat()">
-    <button class="send-btn" onclick="sendChat()">→</button>
-  </div>
 
-  <!-- PRACTICE -->
-  <div class="screen" id="practice">
-    <div class="app-header">
-      <div><div class="eyebrow">Chapter 38 quiz</div><h1>Practice</h1></div>
-    </div>
-    <div class="card" style="margin-bottom:18px">
-      <div class="card-title">Try a sample quiz</div>
-      <div class="card-sub" style="margin-top:6px">Test your knowledge of compression & limiting</div>
-    </div>
-    <div id="quizbox"></div>
-  </div>
-
-  <!-- TOOLS -->
-  <div class="screen" id="tools">
-    <div class="app-header">
-      <div><div class="eyebrow">Handbook tools</div><h1>Tools</h1></div>
-    </div>
-
-    <div class="section-label">Diagram gallery</div>
-    <div class="diagram-grid" id="diagramGrid"></div>
-
-    <div class="section-label" style="margin-top:24px">Room Analyzer (RTA)</div>
-    <div class="card">
-      <div class="card-sub" style="margin-bottom:10px">Live spectrum of your room, using your device's microphone. Works on laptop or phone.</div>
-      <canvas id="rtaCanvas" width="300" height="120" style="width:100%;background:#0a0e1a;border-radius:8px"></canvas>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn-gold" id="rtaStartBtn" onclick="toggleRTA()">Start Analyzer</button>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="brand"><span class="brand-mark">W</span><span class="brand-copy">WHITLEY ENTERPRISE LLC<small>Where Your Vision Comes to Life.</small></span></div>
+        <p class="muted" style="margin-top:18px">Official home of <em>The Whitley Audio Visual Engineering Handbook</em> and professional AV education, training, consulting, and publishing.</p>
       </div>
-      <div class="lock-error" id="rtaError" style="text-align:left"></div>
+      <div><h3>Explore</h3><div class="footer-links"><a href="handbook.html">The Handbook</a><a href="author.html">About the Author</a><a href="preview.html">Look Inside</a><a href="training.html">Training</a></div></div>
+      <div><h3>Information</h3><div class="footer-links"><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a></div></div>
     </div>
-
-    <div class="section-label" style="margin-top:24px">Graphic EQ — try it live</div>
-    <div class="card">
-      <div class="card-sub" style="margin-bottom:10px">Drag the bands, then test with your mic to hear the change. <strong>Use headphones</strong> to avoid feedback.</div>
-      <div class="eq-band-row" id="eqBandRow"></div>
-      <button class="btn-gold" id="eqTestBtn" style="margin-top:14px" onclick="toggleEQTest()">Test with Mic</button>
-      <div class="lock-error" id="eqError" style="text-align:left"></div>
-    </div>
+    <div class="copyright">© <span data-year></span> Whitley Enterprise LLC. All rights reserved.</div>
   </div>
+</footer>
+<script src="assets/js/script.js"></script>
 
-  <div class="tabbar">
-    <button class="tab active" data-tab="home" onclick="showScreen('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
-      Home
-    </button>
-    <button class="tab" data-tab="read" onclick="showScreen('read')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4V4zM20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6V4z"/></svg>
-      Read
-    </button>
-    <button class="tab" data-tab="tutor" onclick="showScreen('tutor')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
-      Tutor
-    </button>
-    <button class="tab" data-tab="practice" onclick="showScreen('practice')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Practice
-    </button>
-    <button class="tab" data-tab="tools" onclick="showScreen('tools')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-      Tools
-    </button>
-  </div>
-</div>
-
-<script>
-// License gate — verifies purchase against Gumroad before showing any app content
-const GUMROAD_PRODUCT_ID = "pq2FxeGeWoyh11nFSzlNpw==";
-
-function isUnlocked() {
-  return localStorage.getItem('avAcademyUnlocked') === 'true';
-}
-
-function unlockApp() {
-  document.getElementById('lockScreen').style.display = 'none';
-  document.getElementById('statusLockIcon').textContent = '🔓';
-}
-
-async function checkLicense() {
-  const input = document.getElementById('licenseInput');
-  const key = input.value.trim();
-  const errorEl = document.getElementById('lockError');
-  const btn = document.getElementById('unlockBtn');
-  errorEl.textContent = '';
-
-  if (!key) { errorEl.textContent = 'Please enter your license key.'; return; }
-
-  btn.textContent = 'Checking…';
-  btn.disabled = true;
-
-  try {
-    const body = new URLSearchParams();
-    body.append('product_id', GUMROAD_PRODUCT_ID);
-    body.append('license_key', key);
-    const res = await fetch('https://api.gumroad.com/v2/licenses/verify', { method: 'POST', body });
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem('avAcademyUnlocked', 'true');
-      unlockApp();
-    } else {
-      errorEl.textContent = "That key didn't check out — double check it and try again.";
-    }
-  } catch (err) {
-    errorEl.textContent = "Couldn't reach the verification server — check your connection and try again.";
-  }
-  btn.textContent = 'Unlock';
-  btn.disabled = false;
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  if (isUnlocked()) unlockApp();
-});
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.tab[data-tab="' + id + '"]').classList.add('active');
-  document.getElementById('chatInputRow').style.display = (id === 'tutor') ? 'flex' : 'none';
-  if (id === 'practice' && !window.quizLoaded) loadQuiz();
-}
-document.getElementById('chatInputRow').style.display = 'none';
-
-// Interactive EQ diagram drag
-const svg = document.getElementById('eqsvg');
-const handle = document.getElementById('eqhandle');
-const curve = document.getElementById('eqcurve');
-let dragging = false;
-function updateCurve(cx, cy) {
-  cy = Math.max(20, Math.min(110, cy));
-  handle.setAttribute('cx', cx);
-  handle.setAttribute('cy', cy);
-  curve.setAttribute('d', `M0,65 Q${cx},${cy} 300,65`);
-}
-function getPos(evt) {
-  const rect = svg.getBoundingClientRect();
-  const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-  const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-  const x = (clientX - rect.left) / rect.width * 300;
-  const y = (clientY - rect.top) / rect.height * 130;
-  return {x, y};
-}
-handle.addEventListener('mousedown', () => dragging = true);
-handle.addEventListener('touchstart', () => dragging = true);
-window.addEventListener('mousemove', e => { if (dragging) { const p = getPos(e); updateCurve(150, p.y); } });
-window.addEventListener('touchmove', e => { if (dragging) { const p = getPos(e); updateCurve(150, p.y); } });
-window.addEventListener('mouseup', () => dragging = false);
-window.addEventListener('touchend', () => dragging = false);
-
-// Quiz
-const quizQuestions = [
-  { q: "What does a compressor's ratio control determine?", opts: ["How much gain reduction is applied above threshold", "The attack time only", "The output sample rate", "The number of channels compressed"], correct: 0 },
-  { q: "A 4:1 ratio means for every 4 dB over threshold, output increases by:", opts: ["4 dB", "1 dB", "0 dB", "8 dB"], correct: 1 },
-  { q: "Fast attack times are best suited for:", opts: ["Preserving transient punch", "Catching transients and smoothing them quickly", "Only mastering", "Only vocals"], correct: 1 },
-];
-let quizIdx = 0, quizScore = 0;
-function loadQuiz() {
-  window.quizLoaded = true;
-  renderQuiz();
-}
-function renderQuiz() {
-  const box = document.getElementById('quizbox');
-  if (quizIdx >= quizQuestions.length) {
-    box.innerHTML = `<div class="card" style="text-align:center"><div class="card-title" style="font-size:16px">Quiz complete</div><div class="card-sub" style="margin:8px 0">Score: ${quizScore}/${quizQuestions.length}</div><button class="btn-gold" onclick="quizIdx=0;quizScore=0;renderQuiz()">Retry</button></div>`;
-    return;
-  }
-  const q = quizQuestions[quizIdx];
-  box.innerHTML = `<div class="quiz-q">${quizIdx+1}. ${q.q}</div>` +
-    q.opts.map((o,i) => `<div class="quiz-opt" onclick="answerQuiz(${i})">${o}</div>`).join('');
-}
-function answerQuiz(i) {
-  const q = quizQuestions[quizIdx];
-  const opts = document.querySelectorAll('.quiz-opt');
-  opts.forEach((el, idx) => {
-    if (idx === q.correct) el.classList.add('correct');
-    else if (idx === i) el.classList.add('wrong');
-    el.onclick = null;
-  });
-  if (i === q.correct) quizScore++;
-  setTimeout(() => { quizIdx++; renderQuiz(); }, 900);
-}
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {});
-  });
-}
-
-// Diagram gallery - images live directly alongside index.html (confirmed via
-// GitHub folder listing), not in a diagrams/ subfolder.
-const diagrams = [
-  { file: "fig_04_hearing.png",          num: "4",  title: "Human Hearing & Psychoacoustics" },
-  { file: "fig_05_frequency.png",        num: "5",  title: "The Frequency Spectrum" },
-  { file: "fig_07_decibels.png",         num: "7",  title: "The Decibel Scale" },
-  { file: "fig_08_waveforms.png",        num: "8",  title: "Waveforms" },
-  { file: "fig_09_phase.png",            num: "9",  title: "Phase Relationships" },
-  { file: "fig_10_signalflow.png",       num: "10", title: "Signal Flow" },
-  { file: "fig_16_harmonics.png",        num: "16", title: "Harmonics" },
-  { file: "fig_18_resonance.png",        num: "18", title: "Resonance & Standing Waves" },
-  { file: "fig_21_mictypes.png",         num: "21", title: "Microphone Types" },
-  { file: "fig_25_polarpatterns.png",    num: "25", title: "Polar Patterns" },
-  { file: "fig_29_gainstructure.png",    num: "29", title: "Gain Structure & Headroom" },
-  { file: "fig_30_procorder.png",        num: "30", title: "Channel Processing Order" },
-  { file: "fig_31_routing.png",          num: "31", title: "Aux Sends, Matrices & VCAs" },
-  { file: "fig_32_scenes.png",           num: "32", title: "Scenes vs. Snapshots" },
-  { file: "fig_33_workflow.png",         num: "33", title: "Show Workflow Cycle" },
-  { file: "fig_34_eqfilters.png",        num: "34", title: "EQ Filter Shapes" },
-  { file: "fig_35_eqtypes.png",          num: "35", title: "Graphic, Parametric & Dynamic EQ" },
-  { file: "fig_36_surgicalmusical.png",  num: "36", title: "Surgical vs. Musical EQ" },
-  { file: "fig_37_freqproblems.png",     num: "37", title: "Frequency Problem Vocabulary" },
-  { file: "fig_38_compressor.png",       num: "38", title: "Compressor Behavior" },
-  { file: "fig_39_gate.png",             num: "39", title: "Noise Gate Behavior" },
-  { file: "fig_41_busglue.png",          num: "41", title: "Layered Dynamics & Bus Glue" },
-  { file: "fig_42_linearray.png",        num: "42", title: "Line Array vs. Point Source" },
-  { file: "fig_43_subwoofers.png",       num: "43", title: "Subwoofer Placement" },
-  { file: "fig_45_crossovers.png",       num: "45", title: "Active Crossover Signal Path" },
-  { file: "fig_46_alignment.png",        num: "46", title: "Time & Phase Alignment" },
-  { file: "fig_47_worship.png",          num: "47", title: "Worship Service Dynamic Range" },
-  { file: "fig_48_redundancy.png",       num: "48", title: "Redundancy Planning" },
-  { file: "fig_49_festival.png",         num: "49", title: "Festival Changeover / House System" },
-  { file: "fig_50_stadium.png",          num: "50", title: "Stadium Delay System" },
-  { file: "fig_51_broadcastmix.png",     num: "51", title: "Broadcast Mix vs. Live Mix" },
-  { file: "fig_52_hybrid.png",           num: "52", title: "Hybrid Worship Dual Signal Path" },
-  { file: "fig_53_vocalmic.png",         num: "53", title: "Studio Vocal Mic Setup" },
-  { file: "fig_54_drumrecording.png",    num: "54", title: "Drum Kit Mic Placement" },
-  { file: "fig_55_guitaramp.png",        num: "55", title: "Guitar Amp Mic Placement" },
-  { file: "fig_56_piano_leslie.png",     num: "56", title: "Piano, Hammond & Leslie Mic Placement" },
-  { file: "fig_57_ensemble.png",         num: "57", title: "Close vs. Ensemble Mic'ing" },
-  { file: "fig_58_podcast.png",          num: "58", title: "Podcast Signal Chain" },
-  { file: "fig_59_mastering.png",        num: "59", title: "The Mastering Chain" },
-  { file: "fig_60_immersive.png",        num: "60", title: "Immersive / Object-Based Audio" },
-  { file: "fig_61_networkedaudio.png",   num: "61", title: "Networked Audio Topology" },
-  { file: "fig_62_avbmilan.png",         num: "62", title: "AVB / Milan Protocol Landscape" },
-  { file: "fig_63_cabling.png",          num: "63", title: "Cable Type Comparison" },
-  { file: "fig_64_clocking.png",         num: "64", title: "Clock Synchronization" },
-  { file: "fig_65_facility.png",         num: "65", title: "Facility Design Priorities" },
-  { file: "fig_66_rack.png",             num: "66", title: "Rack Signal Flow Layout" },
-  { file: "fig_67_groundloop.png",       num: "67", title: "Ground Loop Diagnosis" },
-  { file: "fig_68_ups.png",              num: "68", title: "UPS Power Protection" },
-  { file: "fig_70_ethics.png",           num: "70", title: "Professional Ethics Pillars" },
-  { file: "fig_71_training.png",         num: "71", title: "Volunteer / Hire Training Progression" },
-  { file: "fig_72_pricing.png",          num: "72", title: "Project Pricing Components" },
-  { file: "fig_73_business.png",         num: "73", title: "AV Business Pillars" },
-  { file: "fig_74_career.png",           num: "74", title: "Sustainable Career Triad" },
-  { file: "fig_75_certpath.png",         num: "75", title: "Certification Pathway" },
-  { file: "fig_76_videointerfaces.png",  num: "76", title: "Broadcast Video Interfaces (SDI/HDMI/NDI)" },
-  { file: "fig_78_camerachain.png",      num: "78", title: "Camera Chain / CCU Shading" },
-  { file: "fig_79_switcher.png",         num: "79", title: "Video Switcher Architecture" },
-  { file: "fig_80_streaming.png",        num: "80", title: "Live Streaming Pipeline" },
-  { file: "fig_81_mixminus.png",         num: "81", title: "Mix-Minus / IFB" },
-  { file: "fig_82_podcastworkflow.png",  num: "82", title: "Podcast Workflow" },
-  { file: "fig_83_lighting.png",         num: "83", title: "Three-Point Lighting" },
-  { file: "fig_84_broadcastchain.png",   num: "84", title: "Complete Broadcast Signal Chain" },
-  { file: "fig_85_scales.png",           num: "85", title: "Broadcast System Scale Comparison" },
-  { file: "fig_86_rf.png",               num: "86", title: "RF Frequency Coordination" },
-  { file: "fig_87_stagepatch.png",       num: "87", title: "Stage Box / Snake Architecture" },
-  { file: "fig_88_monitors.png",         num: "88", title: "Wedge vs. IEM Monitors" },
-  { file: "fig_89_measurement.png",      num: "89", title: "Dual-FFT System Measurement" },
-  { file: "fig_90_troubleshooting.png",  num: "90", title: "Troubleshooting Flowchart" },
-  { file: "fig_91_digitalconsoles.png",  num: "91", title: "Digital Mixer Channel Strip" },
-  { file: "fig_92_fohmix.png",           num: "92", title: "FOH Mix Build Order" },
-];
-function renderDiagramGrid() {
-  const grid = document.getElementById('diagramGrid');
-  if (!grid) return;
-  grid.innerHTML = diagrams.map(d => `
-    <div class="diagram-tile">
-      <img src="${d.file}" alt="Figure ${d.num}" onerror="this.outerHTML='<div class=diagram-fallback>Fig ${d.num}</div>'">
-      <div class="diagram-caption">Fig ${d.num} — ${d.title}</div>
-    </div>
-  `).join('');
-}
-renderDiagramGrid();
-
-// Room Analyzer (RTA) - real-time spectrum from the visitor's own microphone
-let rtaCtx, rtaAnalyser, rtaStream, rtaRAF, rtaRunning = false;
-async function toggleRTA() {
-  const btn = document.getElementById('rtaStartBtn');
-  const errEl = document.getElementById('rtaError');
-  errEl.textContent = '';
-  if (rtaRunning) {
-    stopRTA();
-    btn.textContent = 'Start Analyzer';
-    rtaRunning = false;
-    return;
-  }
-  try {
-    rtaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    rtaCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = rtaCtx.createMediaStreamSource(rtaStream);
-    rtaAnalyser = rtaCtx.createAnalyser();
-    rtaAnalyser.fftSize = 1024;
-    source.connect(rtaAnalyser);
-    drawRTA();
-    btn.textContent = 'Stop Analyzer';
-    rtaRunning = true;
-  } catch (err) {
-    errEl.textContent = "Couldn't access the microphone — check your browser's mic permission for this site and try again.";
-  }
-}
-function drawRTA() {
-  const canvas = document.getElementById('rtaCanvas');
-  const ctx = canvas.getContext('2d');
-  const bufferLength = rtaAnalyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
-  function render() {
-    rtaRAF = requestAnimationFrame(render);
-    rtaAnalyser.getByteFrequencyData(dataArray);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const usableBins = Math.floor(bufferLength * 0.5);
-    const barWidth = canvas.width / usableBins;
-    for (let i = 0; i < usableBins; i++) {
-      const barHeight = (dataArray[i] / 255) * canvas.height;
-      ctx.fillStyle = '#C79A3F';
-      ctx.fillRect(i * barWidth, canvas.height - barHeight, Math.max(barWidth - 1, 1), barHeight);
-    }
-  }
-  render();
-}
-function stopRTA() {
-  if (rtaRAF) cancelAnimationFrame(rtaRAF);
-  if (rtaStream) rtaStream.getTracks().forEach(t => t.stop());
-  if (rtaCtx) rtaCtx.close();
-  const canvas = document.getElementById('rtaCanvas');
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// Graphic EQ - visual bands you can drag; optional live mic test through real filters
-const eqBands = [60, 150, 400, 1000, 2500, 6000, 12000];
-function renderEQBands() {
-  const row = document.getElementById('eqBandRow');
-  row.innerHTML = eqBands.map((freq, i) => `
-    <div class="eq-band">
-      <input type="range" min="-12" max="12" value="0" step="1" id="eqSlider${i}" oninput="updateEQBand(${i}, this.value)">
-      <div class="eq-band-label">${freq >= 1000 ? (freq/1000)+'k' : freq}</div>
-    </div>
-  `).join('');
-}
-renderEQBands();
-
-let eqCtx, eqStream, eqFilters = [], eqTesting = false;
-function updateEQBand(i, val) {
-  if (eqFilters[i]) eqFilters[i].gain.value = parseFloat(val);
-}
-async function toggleEQTest() {
-  const btn = document.getElementById('eqTestBtn');
-  const errEl = document.getElementById('eqError');
-  errEl.textContent = '';
-  if (eqTesting) {
-    stopEQTest();
-    btn.textContent = 'Test with Mic';
-    eqTesting = false;
-    return;
-  }
-  try {
-    eqStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    eqCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = eqCtx.createMediaStreamSource(eqStream);
-    let prev = source;
-    eqFilters = eqBands.map((freq, i) => {
-      const f = eqCtx.createBiquadFilter();
-      f.type = 'peaking';
-      f.frequency.value = freq;
-      f.Q.value = 1.2;
-      const slider = document.getElementById('eqSlider' + i);
-      f.gain.value = slider ? parseFloat(slider.value) : 0;
-      prev.connect(f);
-      prev = f;
-      return f;
-    });
-    prev.connect(eqCtx.destination);
-    btn.textContent = 'Stop Test';
-    eqTesting = true;
-  } catch (err) {
-    errEl.textContent = "Couldn't access the microphone — check your browser's mic permission for this site and try again.";
-  }
-}
-function stopEQTest() {
-  if (eqStream) eqStream.getTracks().forEach(t => t.stop());
-  if (eqCtx) eqCtx.close();
-  eqFilters = [];
-}
-
-// AI Tutor
-const tutorFAQ = [
-  { keys: ["gain stag", "headroom"], a: "Gain staging is about setting levels at every point in the signal chain — mic pre, channel fader, bus, master — so each stage runs hot enough for a clean signal but never clips. Chapter 29 walks through the full headroom concept with examples." },
-  { keys: ["compress", "ratio", "limit"], a: "A compressor reduces gain once a signal crosses your threshold, and the ratio decides how much reduction is applied. A 4:1 ratio means 4 dB over threshold comes out as 1 dB over. Chapter 38 covers this with the full diagram." },
-  { keys: ["eq", "equali", "filter"], a: "EQ shapes tone by boosting or cutting specific frequency bands. Parametric EQ gives you control over frequency, gain, and bandwidth (Q); graphic EQ uses fixed bands. Chapters 34-37 go deep on when to reach for each type." },
-  { keys: ["mic", "microphone", "placement"], a: "Mic placement is mostly about distance and angle relative to the sound source, and how that interacts with the room. Chapters 53-57 cover placement for vocals, drums, guitar amps, and keys specifically." },
-  { keys: ["mast", "loudness"], a: "Mastering is the final pass that makes a mix translate well across playback systems — EQ, compression, limiting, and loudness targeting all come into play. Chapter 59 breaks down the full mastering chain." },
-];
-
-function getFAQAnswer(msg) {
-  const lower = msg.toLowerCase();
-  for (const entry of tutorFAQ) {
-    if (entry.keys.some(k => lower.includes(k))) return entry.a;
-  }
-  return "That's a great question for the full handbook — I don't have a canned answer for that one yet, but you'll find it covered in detail across the 93 chapters. Try asking about gain staging, EQ, compression, mic placement, or mastering for now.";
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  const log = document.getElementById('chatlog');
-  log.innerHTML += `<div class="chat-msg user"><div class="bubble user">${msg}</div></div>`;
-  input.value = '';
-  const typingId = 'typing-' + Date.now();
-  log.innerHTML += `<div class="chat-msg" id="${typingId}"><div class="bubble ai">…</div></div>`;
-  document.getElementById('tutor').scrollTop = document.getElementById('tutor').scrollHeight;
-
-  setTimeout(() => {
-    const reply = getFAQAnswer(msg);
-    const el = document.getElementById(typingId);
-    if (el) el.innerHTML = `<div class="bubble ai">${reply}</div>`;
-    document.getElementById('tutor').scrollTop = document.getElementById('tutor').scrollHeight;
-  }, 500);
-}
-</script>
-
-</body>
-</html>
+</body></html>
