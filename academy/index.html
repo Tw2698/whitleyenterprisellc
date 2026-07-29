@@ -612,7 +612,7 @@ function renderDiagramGrid() {
   const grid = document.getElementById('diagramGrid');
   if (!grid) return;
   grid.innerHTML = diagrams.map(d => `
-    <div class="diagram-tile">
+    <div class="diagram-tile" style="cursor:pointer" onclick="window.open('${d.file}','_blank')">
       <img src="${d.file}" alt="Figure ${d.num}" onerror="this.outerHTML='<div class=diagram-fallback>Fig ${d.num}</div>'">
       <div class="diagram-caption">Fig ${d.num} — ${d.title}</div>
     </div>
