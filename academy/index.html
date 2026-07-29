@@ -326,16 +326,11 @@
       <div style="text-align:center;color:#8a92a3;font-size:10.5px;margin-top:4px">Drag the gold point — Figure 34.1, EQ filter shapes</div>
     </div>
 
-    <div class="part-header">Part V — Equalization</div>
-    <div class="chapter-row"><div class="chapter-num">34</div><div class="chapter-title">Understanding EQ & Filter Types</div></div>
-    <div class="chapter-row"><div class="chapter-num">35</div><div class="chapter-title">Graphic, Parametric & Dynamic EQ</div></div>
-    <div class="chapter-row"><div class="chapter-num">36</div><div class="chapter-title">Surgical vs. Musical EQ Technique</div></div>
-    <div class="chapter-row"><div class="chapter-num">37</div><div class="chapter-title">Frequency Problem-Solving in the Mix</div></div>
-
-    <div class="part-header">Part VI — Dynamics Processing</div>
-    <div class="chapter-row" onclick="showScreen('practice')"><div class="chapter-num">38</div><div class="chapter-title">Compression & Limiting</div></div>
-    <div class="chapter-row"><div class="chapter-num">39</div><div class="chapter-title">Expansion & Noise Gates</div></div>
-    <div class="chapter-row"><div class="chapter-num">40</div><div class="chapter-title">Advanced Dynamics</div></div>
+    <div class="section-label" style="margin-top:20px">Full Handbook</div>
+    <div class="card">
+      <div class="card-sub" style="margin-bottom:10px">Your complete 256-page handbook.</div>
+      <a href="handbook.pdf" target="_blank" class="btn-gold" style="display:block;text-align:center;text-decoration:none">Open Full Book</a>
+    </div>
   </div>
 
   <!-- TUTOR -->
@@ -539,8 +534,8 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Diagram gallery - looks for images in diagrams/ folder; falls back to a
-// clean placeholder tile (figure number) if the image file isn't there yet.
+// Diagram gallery - images live directly alongside index.html (confirmed via
+// GitHub folder listing), not in a diagrams/ subfolder.
 const diagrams = [
   { file: "fig_04_hearing.png",          num: "4",  title: "Human Hearing & Psychoacoustics" },
   { file: "fig_05_frequency.png",        num: "5",  title: "The Frequency Spectrum" },
@@ -615,9 +610,10 @@ const diagrams = [
 ];
 function renderDiagramGrid() {
   const grid = document.getElementById('diagramGrid');
+  if (!grid) return;
   grid.innerHTML = diagrams.map(d => `
     <div class="diagram-tile">
-      <img src="diagrams/${d.file}" alt="Figure ${d.num}" onerror="this.outerHTML='<div class=diagram-fallback>Fig ${d.num}</div>'">
+      <img src="${d.file}" alt="Figure ${d.num}" onerror="this.outerHTML='<div class=diagram-fallback>Fig ${d.num}</div>'">
       <div class="diagram-caption">Fig ${d.num} — ${d.title}</div>
     </div>
   `).join('');
